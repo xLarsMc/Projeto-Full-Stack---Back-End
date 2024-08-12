@@ -1,6 +1,8 @@
 const express = require('express');
+require("dotenv").config()
+
 const app = express();
-const port = 3000;
+const port = process.env.PORT;
 
 app.get("/", (req, res) => {
     res.send("Teste.");
@@ -9,3 +11,5 @@ app.get("/", (req, res) => {
 app.listen(port, () => {
     console.log("Working!")
 })
+
+require("./Database/mongoConnection");
