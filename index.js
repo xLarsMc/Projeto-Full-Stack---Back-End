@@ -4,7 +4,7 @@ const express = require('express');
 const bodyParser = require('body-parser')
 const cors = require('cors');
 const app = express();
-const port = process.env.PORT;
+const port = process.env.PORT;;
 
 //Leitura JSON/Configuração cors
 app.use(express.json());
@@ -15,11 +15,6 @@ app.use(cors());
 //Ligando o servidor
 app.listen(port, () => {
     console.log("Working! Port: " + port);
-})
-
-//Configurando rotas
-app.get("/teste", (req, res) => {
-    res.send("Teste.");
 })
 
 require("./Database/mongoConnection");
