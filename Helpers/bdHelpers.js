@@ -13,12 +13,14 @@ module.exports = {
         const foundPost = await postModel.findOne({name: name});
         return foundPost;
     },
-    getAllPost: async(name) => {
-        if (name === 'all'){
-            const allPost = await postModel.find();
-            return allPost;
-        } else{
-            return false;
-        }
+    getAllPost: async() => {
+        const allPost = await postModel.find();
+        return allPost;
+    },
+    deleteAll: async() => {
+        const deletedPosts = await postModel.deleteMany();
+        const deletedUsers = await userModel.deleteMany();
+        const deletedArray = [deletedPosts, deletedUsers]
+        return deletedArray;
     }
 }
