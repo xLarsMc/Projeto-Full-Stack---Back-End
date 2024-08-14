@@ -7,7 +7,7 @@ const helpers = require('../Helpers/bdHelpers');
 
 const jwt = require('jsonwebtoken');
 const auth = require('../Helpers/auth');
-
+const SECRET = process.env.SECRET;
 //Rota testes e instalação/deleção
 router.get('/teste', async (req, res) => {
   res.send('teste');
@@ -109,23 +109,22 @@ router.get('/post/:name', async (req, res) => {
 ////////////////
 
 router.post('/login', auth.verifDados, async (req, res) => {
-  const { login, password } = req.body;
+  const { login, senha } = req.body;
   try {
     const user = await helpers.getUser(login);
     if (user === null) {
-      return res.status(422).json({ msg: 'Usuário não encontrado' });
+      res.status(422).json({ msg: 'Usuário não encontrado' });
     }
-    const match = await bcrypt.compare(password, user.password);
-    if (match) {
-      const token = jwt.sign({ login: user.login }, process.env.SECRET);
-      return res.status(200).json({ msg: 'Logado com sucesso', token: token });
-    } else {
-      return res.status(422).json({ msg: 'Senha incorreta' });
-    }
+    bcrypt.compare(senha, user.senha, (err, match) => {
+      if (match) {
+        const token = jwt.sign({ login: user.login }, SECRET);
+        res.status(200).json({ msg: 'Logado com sucesso', token: token });
+      } else {
+        res.status(422).json({ msg: 'Senha incorreta' });
+      }
+    });
   } catch (err) {
-    return res
-      .status(400)
-      .json({ msg: 'Um erro não identificado ocorreu', err: err });
+    res.status(400).json({ msg: 'Um erro não identificado ocorreu', err: err });
   }
 });
 module.exports = router;
