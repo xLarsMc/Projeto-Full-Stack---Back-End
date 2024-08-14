@@ -1,25 +1,37 @@
 //Importações
+require("dotenv").config()
 const express = require('express');
+const bcrypt = require('bcrypt')
 const router = express.Router();
-const helpers = require('../Helpers/bdHelpers');
+const helpers = require('../Helpers/bdHelpers'); 
 
 //Rota testes e instalação/deleção
-router.get('/teste', (req, res) => {
+router.get('/teste', async (req, res) => {
     res.send("teste");
 });
 
 router.get('/install', async(req, res) => {
     try{
-        const newUser1 = await helpers.newUser('Leandro', 'TesteLeandro');
-        const newUser2 = await helpers.newUser('Kodi', 'TesteKodi');
-        const newUser3 = await helpers.newUser('Professor', 'TesteProfessor');
+        await bcrypt.genSalt(15, async function(err, salt) {
+            await bcrypt.hash("TesteLeandro", salt, async function(err, hash) {
+                await helpers.newUser('Leandro', hash);
+            })
+        })
+        await bcrypt.genSalt(15, async function(err, salt) {
+            await bcrypt.hash("TesteKodi", salt, async function(err, hash) {
+                await helpers.newUser('Kodi', hash);
+            })
+        })
+        await bcrypt.genSalt(15, async function(err, salt) {
+            await bcrypt.hash("TesteProfessor", salt, async function(err, hash) {
+                await helpers.newUser('Professor', hash);
+            })
+        })
         const newPost1 = await helpers.newPost('Teste1', 'Teste1', 'Teste1', 'Teste1');
         const newPost2 = await helpers.newPost('Teste2', 'Teste2', 'Teste2', 'Teste2');
         const newPost3 = await helpers.newPost('Teste3', 'Teste3', 'Teste3', 'Teste3');
         return res.status(200).json({
-            msg: "Usuários criados e Posts criados", 
-            user1 : newUser1, user2: newUser2, user3: newUser3,
-            post1: newPost1, post2: newPost2, post3: newPost3
+            msg: "Usuários criados e Posts criados"
         });
     } catch(err){
         return res.status(400).json({msg: "Deu ruim pai", err:err});
