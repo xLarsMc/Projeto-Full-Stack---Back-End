@@ -113,18 +113,19 @@ router.post('/login', auth.verifDados, async (req, res) => {
   try {
     const user = await helpers.getUser(login);
     if (user === null) {
-      res.status(422).json({ msg: 'Usuário não encontrado' });
+      return res.status(422).json({ msg: 'Usuário não encontrado'});
     }
+    console.log("mala")
     bcrypt.compare(senha, user.senha, (err, match) => {
       if (match) {
         const token = jwt.sign({ login: user.login }, SECRET);
-        res.status(200).json({ msg: 'Logado com sucesso', token: token });
+        return res.status(200).json({ msg: 'Logado com sucesso', token: token });
       } else {
-        res.status(422).json({ msg: 'Senha incorreta' });
+        return res.status(422).json({ msg: 'Senha incorreta' });
       }
     });
   } catch (err) {
-    res.status(400).json({ msg: 'Um erro não identificado ocorreu', err: err });
+    return res.status(400).json({ msg: 'Um erro não identificado ocorreu', err: err });
   }
 });
 module.exports = router;
