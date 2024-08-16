@@ -22,7 +22,7 @@ module.exports = {
   verifDados(req, res, next) {
     const { login, senha } = req.body;
     if (!login) {
-      return res.status(422).json({ msg: 'erro -> digite um nome' });
+      return res.status(422).json({ msg: 'erro -> digite um login' });
     }
     if (!senha) {
       return res.status(422).json({ msg: 'erro -> digite uma senha' });

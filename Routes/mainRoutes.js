@@ -9,8 +9,13 @@ const jwt = require('jsonwebtoken');
 const auth = require('../Helpers/auth');
 const SECRET = process.env.SECRET;
 //Rota testes e instalação/deleção
-router.get('/teste', async (req, res) => {
-  res.send('teste');
+router.get('/teste', (req, res) => {
+    res.status(200).json({msg: 'working'});
+  });
+
+router.post('/teste', auth.veriftoken, async (req, res) => {
+  const auth = await helpers.getLoginByAuthHeader(req.headers['authorization'])
+  res.status(200).json({msg: 'teste token valido', login: auth});
 });
 
 router.get('/install', async (req, res) => {
@@ -115,7 +120,6 @@ router.post('/login', auth.verifDados, async (req, res) => {
     if (user === null) {
       return res.status(422).json({ msg: 'Usuário não encontrado'});
     }
-    console.log("mala")
     bcrypt.compare(senha, user.senha, (err, match) => {
       if (match) {
         const token = jwt.sign({ login: user.login }, SECRET);

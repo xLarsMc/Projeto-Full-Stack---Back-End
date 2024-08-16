@@ -1,5 +1,6 @@
 const { userModel, postModel } = require('../Models/model');
-const { get } = require('../Routes/mainRoutes');
+const jwt = require('jsonwebtoken')
+require('dotenv').config();
 
 module.exports = {
   newUser: async (login, senha) => {
@@ -33,4 +34,11 @@ module.exports = {
     const user = await userModel.findOne({ login: login });
     return user;
   },
+  getLoginByAuthHeader: async(authHeader) => {
+    const token = authHeader && authHeader.split(' ')[1]
+    const secret = process.env.SECRET;
+    const decoded = jwt.verify(token, secret)
+    console.log(decoded.login)
+    return decoded.login;
+  }
 };
