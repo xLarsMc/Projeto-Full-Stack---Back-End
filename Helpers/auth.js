@@ -1,6 +1,21 @@
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
+const { veriftoken } = require('./auth');
 module.exports = {
+  verifLogin(req, res, next) {
+    const authHeader = req.headers['authorization'];
+    if (authHeader) {
+      const token = authHeader.split(' ')[1];
+      try {
+        const secret = process.env.SECRET;
+        jwt.verify(token, secret);
+        return res.redirect('/LoggedPage');
+      } catch (error) {
+        return res.status(400).json({ msg: 'token invalido' });
+      }
+    }
+    next();
+  },
   veriftoken(req, res, next) {
     const authHeader = req.headers['authorization'];
     if (!authHeader) {
