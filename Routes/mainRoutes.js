@@ -10,12 +10,12 @@ const auth = require('../Helpers/auth');
 const SECRET = process.env.SECRET;
 //Rota testes e instalação/deleção
 router.get('/teste', (req, res) => {
-    res.status(200).json({msg: 'working'});
-  });
+  res.status(200).json({ msg: 'working' });
+});
 
 router.post('/teste', auth.veriftoken, async (req, res) => {
-  const auth = await helpers.getLoginByAuthHeader(req.headers['authorization'])
-  res.status(200).json({msg: 'teste token valido', login: auth});
+  const auth = await helpers.getLoginByAuthHeader(req.headers['authorization']);
+  res.status(200).json({ msg: 'teste token valido', login: auth });
 });
 
 router.get('/install', async (req, res) => {
@@ -113,26 +113,32 @@ router.get('/post/:name', async (req, res) => {
 
 ////////////////
 router.post('/logged', auth.veriftoken, async (req, res) => {
-  return res.status(200).json({msg: "Logado!"})
-})
+  return res.status(200).json({ msg: 'Logado!' });
+});
 
-router.post('/login', auth.verifDados, async (req, res) => {
+router.post('/login', auth.verifDados, auth.verifLogin, async (req, res) => {
   const { login, senha } = req.body;
   try {
     const user = await helpers.getUser(login);
     if (user === null) {
-      return res.status(422).json({ msg: 'Usuário não encontrado'});
+      return res.status(422).json({ msg: 'Usuário não encontrado' });
     }
     bcrypt.compare(senha, user.senha, (err, match) => {
       if (match) {
-        const token = jwt.sign({ login: user.login }, SECRET, {expiresIn: '30m'});
-        return res.status(200).json({ msg: 'Logado com sucesso', token: token });
+        const token = jwt.sign({ login: user.login }, SECRET, {
+          expiresIn: '30m',
+        });
+        return res
+          .status(200)
+          .json({ msg: 'Logado com sucesso', token: token });
       } else {
         return res.status(422).json({ msg: 'Senha incorreta' });
       }
     });
   } catch (err) {
-    return res.status(400).json({ msg: 'Um erro não identificado ocorreu', err: err });
+    return res
+      .status(400)
+      .json({ msg: 'Um erro não identificado ocorreu', err: err });
   }
 });
 module.exports = router;
