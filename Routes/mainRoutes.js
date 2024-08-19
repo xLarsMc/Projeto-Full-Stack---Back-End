@@ -112,6 +112,9 @@ router.get('/post/:name', async (req, res) => {
 });
 
 ////////////////
+router.post('/logged', auth.veriftoken, async (req, res) => {
+  return res.status(200).json({msg: "Logado!"})
+})
 
 router.post('/login', auth.verifDados, async (req, res) => {
   const { login, senha } = req.body;
@@ -122,7 +125,7 @@ router.post('/login', auth.verifDados, async (req, res) => {
     }
     bcrypt.compare(senha, user.senha, (err, match) => {
       if (match) {
-        const token = jwt.sign({ login: user.login }, SECRET);
+        const token = jwt.sign({ login: user.login }, SECRET, {expiresIn: '30m'});
         return res.status(200).json({ msg: 'Logado com sucesso', token: token });
       } else {
         return res.status(422).json({ msg: 'Senha incorreta' });
