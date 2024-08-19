@@ -116,7 +116,7 @@ router.post('/logged', auth.veriftoken, async (req, res) => {
   return res.status(200).json({ msg: 'Logado!' });
 });
 
-router.post('/login', auth.verifDados, auth.verifLogin, async (req, res) => {
+router.post('/login', auth.verifDados, async (req, res) => {
   const { login, senha } = req.body;
   try {
     const user = await helpers.getUser(login);
