@@ -73,6 +73,12 @@ router.delete('/install', async (req, res) => {
 //Rota Posts
 router.post('/post', checkPost.verifPost, async (req, res) => {
   const { name, commonPlaces, description, drops, image } = req.body;
+  const existPost = await helpers.getPost(name);
+
+  if (existPost !== null) {
+    return res.status(200).json({ msg: 'Um post com esse nome já existe!', existPost: existPost });
+  }
+  
   try {
     const newPost = await helpers.newPost(
       name,

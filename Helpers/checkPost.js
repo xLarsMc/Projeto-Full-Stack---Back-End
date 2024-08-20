@@ -1,5 +1,6 @@
+const helpers = require('./bdHelpers')
 module.exports = {
-    verifPost(req, res, next) {
+    verifPost (req, res, next) {
         const { name, commonPlaces, description, drops, image } = req.body;
         if (!name) {
           return res.status(401).json({ msg: 'Digite um nome!' });
