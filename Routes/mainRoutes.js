@@ -71,13 +71,14 @@ router.delete('/install', async (req, res) => {
 
 //Rota Posts
 router.post('/post', async (req, res) => {
-  const { name, commonPlaces, description, drops } = req.body;
+  const { name, commonPlaces, description, drops, image } = req.body;
   try {
     const newPost = await helpers.newPost(
       name,
       commonPlaces,
       description,
       drops,
+      image
     );
     console.log(newPost);
     return res.status(200).json({ msg: 'Worked: ', post: newPost });
