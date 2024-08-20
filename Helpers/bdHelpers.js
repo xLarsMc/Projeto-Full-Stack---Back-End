@@ -7,12 +7,13 @@ module.exports = {
     const user = await userModel.create({ login, senha });
     return user;
   },
-  newPost: async (name, commonPlaces, description, drops) => {
+  newPost: async (name, commonPlaces, description, drops, image) => {
     const post = await postModel.create({
       name,
       commonPlaces,
       description,
       drops,
+      image,
     });
     return post;
   },

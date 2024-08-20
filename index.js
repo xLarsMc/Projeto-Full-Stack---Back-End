@@ -5,7 +5,7 @@ const bodyParser = require('body-parser')
 const cors = require('cors');
 const app = express();
 const routes = require('./Routes/mainRoutes')
-const port = process.env.PORT;;
+const port = process.env.PORT;
 
 //Leitura JSON/Configuração cors
 app.use(express.json());

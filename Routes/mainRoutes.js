@@ -40,18 +40,21 @@ router.get('/install', async (req, res) => {
       'Teste1',
       'Teste1',
       'Teste1',
+      '//botw-compendium.herokuapp.com/api/v3/compendium/entry/mountain_goat/image'
     );
     const newPost2 = await helpers.newPost(
       'Teste2',
       'Teste2',
       'Teste2',
       'Teste2',
+      '//botw-compendium.herokuapp.com/api/v3/compendium/entry/mountain_goat/image'
     );
     const newPost3 = await helpers.newPost(
       'Teste3',
       'Teste3',
       'Teste3',
       'Teste3',
+      '//botw-compendium.herokuapp.com/api/v3/compendium/entry/mountain_goat/image'
     );
     return res.status(200).json({
       msg: 'Usuários criados e Posts criados',

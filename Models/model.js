@@ -9,7 +9,8 @@ const post = new mongoose.Schema({
     name: String,
     commonPlaces: String,
     description: String,
-    drops: String
+    drops: String,
+    image:String
 })
 
 const userModel = mongoose.model("user", user);
