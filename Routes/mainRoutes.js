@@ -7,6 +7,7 @@ const helpers = require('../Helpers/bdHelpers');
 
 const jwt = require('jsonwebtoken');
 const auth = require('../Helpers/auth');
+const checkPost = require('../Helpers/checkPost')
 const SECRET = process.env.SECRET;
 //Rota testes e instalação/deleção
 router.get('/teste', (req, res) => {
@@ -70,7 +71,7 @@ router.delete('/install', async (req, res) => {
 });
 
 //Rota Posts
-router.post('/post', async (req, res) => {
+router.post('/post', checkPost.verifPost, async (req, res) => {
   const { name, commonPlaces, description, drops, image } = req.body;
   try {
     const newPost = await helpers.newPost(
@@ -136,7 +137,7 @@ router.post('/login', auth.verifDados, async (req, res) => {
           .status(200)
           .json({ msg: 'Logado com sucesso', token: token });
       } else {
-        return res.status(422).json({ msg: 'Senha incorreta' });
+        return res.status(422).json({ msg: 'Senha incorreta' })
       }
     });
   } catch (err) {
