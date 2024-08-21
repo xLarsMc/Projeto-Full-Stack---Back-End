@@ -6,6 +6,12 @@ const cors = require('cors');
 const app = express();
 const routes = require('./Routes/mainRoutes')
 const port = process.env.PORT;
+const fs = require('fs')
+const https = require('https')
+
+const privateKey = fs.readFileSync("./Certificado/key.pem", "utf8")
+const certificado = fs.readFileSync("./Certificado/cert.pem", "utf8")
+const credenciais = {key: privateKey, cert: certificado};
 
 //Leitura JSON/Configuração cors
 app.use(express.json());
@@ -16,7 +22,9 @@ app.use(cors({
 }));
 
 //Ligando o servidor
-app.listen(port, () => {
+const httpsServer = https.createServer(credenciais, app);
+
+httpsServer.listen(port, () => {
     console.log("Working! Port: " + port);
 })
 
