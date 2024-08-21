@@ -4,11 +4,19 @@ const express = require('express');
 const bcrypt = require('bcrypt');
 const router = express.Router();
 const helpers = require('../Helpers/bdHelpers');
+const redis = require('redis')
 
 const jwt = require('jsonwebtoken');
 const auth = require('../Helpers/auth');
-const checkPost = require('../Helpers/checkPost')
+const checkPost = require('../Helpers/checkPost');
+const { parse } = require('dotenv');
 const SECRET = process.env.SECRET;
+
+const cliente = redis.createClient();
+cliente.on('error', (err) => console.log("Redis deu erro!", err))
+
+cliente.connect();
+
 //Rota testes e instalação/deleção
 router.get('/teste', (req, res) => {
   res.status(200).json({ msg: 'working' });
@@ -75,6 +83,8 @@ router.post('/post', checkPost.verifPost, async (req, res) => {
   const { name, commonPlaces, description, drops, image } = req.body;
   const existPost = await helpers.getPost(name);
 
+  await cliente.del("postagens");
+
   if (existPost !== null) {
     return res.status(200).json({ msg: 'Um post com esse nome já existe!', existPost: existPost });
   }
@@ -98,17 +108,14 @@ router.post('/post', checkPost.verifPost, async (req, res) => {
 router.get('/post/:name', async (req, res) => {
   const { name } = req.params;
   try {
-    if (name === 'all') {
-      const allPosts = await helpers.getAllPost();
-      if (allPosts.length === 0) {
-        return res
-          .status(422)
-          .json({ msg: 'Não há um posts!', allPosts: allPosts });
-      }
-      return res.status(200).json({ msg: 'Worked: ', allPosts: allPosts });
+    const postCache = await cliente.get(`post:${name}`)
+    if(postCache){
+      return res.status(200).json({existPost: JSON.parse(postCache)})
     }
+
     const existPost = await helpers.getPost(name);
     if (existPost !== null) {
+      await cliente.set(`post:${name}`, JSON.stringify(existPost), {EX: 600});
       return res.status(200).json({ msg: 'Worked', existPost: existPost });
     } else {
       return res
