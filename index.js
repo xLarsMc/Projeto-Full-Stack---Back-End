@@ -1,33 +1,43 @@
 //Importações e configurações
-require("dotenv").config()
+require('dotenv').config();
 const express = require('express');
-const bodyParser = require('body-parser')
+const bodyParser = require('body-parser');
 const cors = require('cors');
 const app = express();
-const routes = require('./Routes/mainRoutes')
+const routes = require('./Routes/mainRoutes');
 const port = process.env.PORT;
-const fs = require('fs')
-const https = require('https')
+const fs = require('fs');
+const https = require('https');
+const compression = require('compression');
 
-const privateKey = fs.readFileSync("./Certificado/key.pem", "utf8")
-const certificado = fs.readFileSync("./Certificado/cert.pem", "utf8")
-const credenciais = {key: privateKey, cert: certificado};
+const privateKey = fs.readFileSync('./Certificado/key.pem', 'utf8');
+const certificado = fs.readFileSync('./Certificado/cert.pem', 'utf8');
+const credenciais = { key: privateKey, cert: certificado };
+
+app.use(compression());
+app.use(express.static('build'));
+
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'build', 'index.html'));
+});
 
 //Leitura JSON/Configuração cors
 app.use(express.json());
-app.use(express.urlencoded({extended: false}));
+app.use(express.urlencoded({ extended: false }));
 app.use(bodyParser.json());
-app.use(cors({
-    origin: '*'
-}));
+app.use(
+  cors({
+    origin: '*',
+  }),
+);
 
 //Ligando o servidor
 const httpsServer = https.createServer(credenciais, app);
 
 httpsServer.listen(port, () => {
-    console.log("Working! Port: " + port);
-})
+  console.log('Working! Port: ' + port);
+});
 
 //Configurando rotas
 app.use('/', routes);
-require("./Database/mongoConnection");
+require('./Database/mongoConnection');
