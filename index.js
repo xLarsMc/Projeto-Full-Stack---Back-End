@@ -6,6 +6,7 @@ const cors = require('cors');
 const app = express();
 const routes = require('./Routes/mainRoutes');
 const port = process.env.PORT;
+const path = require('path')
 const fs = require('fs');
 const https = require('https');
 const compression = require('compression');
@@ -16,10 +17,6 @@ const credenciais = { key: privateKey, cert: certificado };
 
 app.use(compression());
 app.use(express.static('build'));
-
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'build', 'index.html'));
-});
 
 //Leitura JSON/Configuração cors
 app.use(express.json());
@@ -41,3 +38,7 @@ httpsServer.listen(port, () => {
 //Configurando rotas
 app.use('/', routes);
 require('./Database/mongoConnection');
+
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, 'build', 'index.html'));
+  });

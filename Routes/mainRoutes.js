@@ -5,6 +5,7 @@ const bcrypt = require('bcrypt');
 const router = express.Router();
 const helpers = require('../Helpers/bdHelpers');
 const redis = require('redis')
+const logFunction = require('../Helpers/logs')
 
 const jwt = require('jsonwebtoken');
 const auth = require('../Helpers/auth');
@@ -86,6 +87,7 @@ router.post('/post', checkPost.verifPost, async (req, res) => {
   await cliente.del("postagens");
 
   if (existPost !== null) {
+    logFunction.log(`Tentativa falha de adicionar postagem. Post com título ${name} já existe.`)
     return res.status(200).json({ msg: 'Um post com esse nome já existe!', existPost: existPost });
   }
   
@@ -100,6 +102,7 @@ router.post('/post', checkPost.verifPost, async (req, res) => {
     console.log(newPost);
     return res.status(200).json({ msg: 'Worked: ', post: newPost });
   } catch (err) {
+    logFunction.log(`Erro desconhecido ao adicionar postagem: ${err}`)
     console.log(error);
     return res.status(500).json({ msg: 'Deu um erro!' + error });
   }
@@ -118,11 +121,13 @@ router.get('/post/:name', async (req, res) => {
       await cliente.set(`post:${name}`, JSON.stringify(existPost), {EX: 600});
       return res.status(200).json({ msg: 'Worked', existPost: existPost });
     } else {
+      logFunction.log(`Tentativa falha de busca de postagem. Post com título ${name} não existe.`)
       return res
         .status(422)
         .json({ msg: 'Não há um post com esse nome!', existPost: existPost });
     }
   } catch (err) {
+    logFunction.log(`Erro desconhecido ao buscar postagem: ${err}`)
     return res
       .status(400)
       .json({ msg: 'Um erro não identificado ocorreu', err: err });
@@ -139,6 +144,7 @@ router.post('/login', auth.verifDados, async (req, res) => {
   try {
     const user = await helpers.getUser(login);
     if (user === null) {
+      logFunction.log(`Tentativa falha de login, Usuário ${login} não existente.`)
       return res.status(422).json({ msg: 'Usuário não encontrado' });
     }
     bcrypt.compare(senha, user.senha, (err, match) => {
@@ -154,6 +160,7 @@ router.post('/login', auth.verifDados, async (req, res) => {
       }
     });
   } catch (err) {
+    logFunction.log(`Erro desconhecido à tentativa de login: ${err}`)
     return res
       .status(400)
       .json({ msg: 'Um erro não identificado ocorreu', err: err });
