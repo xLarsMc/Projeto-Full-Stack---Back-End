@@ -6,7 +6,6 @@ const router = express.Router();
 const helpers = require('../Helpers/bdHelpers');
 const redis = require('redis')
 const logFunction = require('../Helpers/logs')
-
 const jwt = require('jsonwebtoken');
 const auth = require('../Helpers/auth');
 const checkPost = require('../Helpers/checkPost');
@@ -156,6 +155,7 @@ router.post('/login', auth.verifDados, async (req, res) => {
           .status(200)
           .json({ msg: 'Logado com sucesso', token: token });
       } else {
+        logFunction.log(`Tentativa falha. Usuário '${login}' colocou a senha incorretamente.`)
         return res.status(422).json({ msg: 'Senha incorreta' })
       }
     });

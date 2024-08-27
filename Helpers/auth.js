@@ -1,4 +1,6 @@
 const jwt = require('jsonwebtoken');
+const logFunction = require("../Helpers/logs")
+const {body, validationResult} = require('express-validator');
 require('dotenv').config();
 
 module.exports = {
@@ -20,14 +22,20 @@ module.exports = {
       res.status(400).json({ msg: 'token invalido' });
     }
   },
-  verifDados(req, res, next) {
-    const { login, senha } = req.body;
-    if (!login) {
-      return res.status(422).json({ msg: 'erro -> digite um login' });
-    }
-    if (!senha) {
-      return res.status(422).json({ msg: 'erro -> digite uma senha' });
-    }
+
+  verifDados: [
+    body('login').trim().notEmpty()
+    .withMessage('Erro -> digite um login').escape(),
+    body('senha').trim().notEmpty()
+    .withMessage('Erro -> digite uma senha').escape(),
+    (req, res, next) => {
+      const errors = validationResult(req);
+      if(!errors.isEmpty()) {
+        logFunction.log("Erro em uma tentativa de login", errors.array())
+        return res.status(422).json({errors: errors.array()})
+      }
     next();
   },
-};
+]
+
+}

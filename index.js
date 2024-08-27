@@ -10,14 +10,16 @@ const path = require('path')
 const fs = require('fs');
 const https = require('https');
 const compression = require('compression');
-
+const helmet = require('helmet');
+const xss = require('xss-clean')
 const privateKey = fs.readFileSync('./Certificado/key.pem', 'utf8');
 const certificado = fs.readFileSync('./Certificado/cert.pem', 'utf8');
 const credenciais = { key: privateKey, cert: certificado };
 
 app.use(compression());
 app.use(express.static('build'));
-
+app.use(helmet());
+app.use(xss())
 //Leitura JSON/Configuração cors
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
