@@ -11,11 +11,17 @@ const auth = require('../Helpers/auth');
 const checkPost = require('../Helpers/checkPost');
 const { parse } = require('dotenv');
 const SECRET = process.env.SECRET;
+const limit = require('../Helpers/limiter')
 
 const cliente = redis.createClient();
 cliente.on('error', (err) => console.log("Redis deu erro!", err))
 
 cliente.connect();
+
+//Middleware implementado em todas as rotas, contra ataques automatizados
+router.use((req, res, next) => {
+  limit.limiter(req, res, next);
+})
 
 //Rota testes e instalação/deleção
 router.get('/teste', (req, res) => {
