@@ -14,6 +14,20 @@ const SECRET = process.env.SECRET;
 const limit = require('../Helpers/limiter')
 
 const cliente = redis.createClient();
+
+cliente.invalidate = (name) => {
+  return (req, res, next) => {
+    const route_name = name ? name : req.url;
+    if (!cliente) {
+      next();
+      return;
+    }
+    cliente.del(route_name, (err) => console.log(err));
+    console.log('Cache invalidado');
+    next();
+  }
+ }
+
 cliente.on('error', (err) => console.log("Redis deu erro!", err))
 
 cliente.connect();
@@ -85,11 +99,9 @@ router.delete('/install', async (req, res) => {
 });
 
 //Rota Posts
-router.post('/post', auth.veriftoken, checkPost.verifPost, async (req, res) => {
+router.post('/post', cliente.invalidate(), auth.veriftoken, checkPost.verifPost, async (req, res) => {
   const { name, commonPlaces, description, drops, image } = req.body;
   const existPost = await helpers.getPost(name);
-
-  await cliente.del("postagens");
 
   if (existPost !== null) {
     logFunction.log(`Tentativa falha de adicionar postagem. Post com título ${name} já existe.`)
@@ -97,6 +109,7 @@ router.post('/post', auth.veriftoken, checkPost.verifPost, async (req, res) => {
   }
   
   try {
+
     const newPost = await helpers.newPost(
       name,
       commonPlaces,
