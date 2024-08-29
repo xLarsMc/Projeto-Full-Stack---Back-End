@@ -41,5 +41,23 @@ module.exports = {
     const decoded = jwt.verify(token, secret)
     console.log(decoded.login)
     return decoded.login;
+  },
+  searchPosts: async (query) => {
+    if (!query) {
+      return []; 
+    }
+
+    const regex = new RegExp(query, 'i'); 
+
+    const posts = await postModel.find({
+      $or: [
+        { name: regex },
+        { commonPlaces: regex },
+        { description: regex },
+        { drops: regex }
+      ]
+    });
+
+    return posts;
   }
 };

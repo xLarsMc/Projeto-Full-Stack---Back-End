@@ -172,4 +172,22 @@ router.post('/login', auth.verifDados, async (req, res) => {
       .json({ msg: 'Um erro não identificado ocorreu', err: err });
   }
 });
+
+// Exemplo de rota Express.js para busca de sugestões
+router.get('/posts', async (req, res) => {
+  const query = req.query.query;
+  if (!query) {
+    return res.status(400).json({ msg: 'Query parameter is required' });
+  }
+
+  try {
+    const posts = await helpers.searchPosts(query); // Implemente a função searchPosts
+    res.json({ posts });
+  } catch (error) {
+    console.error('Erro ao buscar posts:', error);
+    res.status(500).json({ msg: 'Erro ao buscar posts' });
+  }
+});
+
+
 module.exports = router;
