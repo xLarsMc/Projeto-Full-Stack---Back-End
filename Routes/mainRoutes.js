@@ -85,7 +85,7 @@ router.delete('/install', async (req, res) => {
 });
 
 //Rota Posts
-router.post('/post', checkPost.verifPost, async (req, res) => {
+router.post('/post', auth.veriftoken, checkPost.verifPost, async (req, res) => {
   const { name, commonPlaces, description, drops, image } = req.body;
   const existPost = await helpers.getPost(name);
 
@@ -113,7 +113,7 @@ router.post('/post', checkPost.verifPost, async (req, res) => {
   }
 });
 
-router.get('/post/:name', async (req, res) => {
+router.get('/post/:name', auth.veriftoken, async (req, res) => {
   const { name } = req.params;
   try {
     const postCache = await cliente.get(`post:${name}`)
